@@ -1,0 +1,15 @@
+消息组成：
+    {
+     msgType : int,
+     msgId : String,
+     fromUid : Long,
+     toUid : Long,
+     chatroomId : Long,
+     createTime : TimeStamp,
+     channelId : object, //bind消息返回
+     content : {
+                 contentType : int, //类型： 1文字 2图片 3群内提醒...
+                 contentText : String,
+                 cmdInChatType : int, //contentType为3的时候 是哪种子类型 1加入频道 2设置管理员...
+                },
+    }
