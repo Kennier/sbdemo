@@ -2,11 +2,14 @@ package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import nettyServer.msgStrategy.BaseStrategy;
 
-public class P2pMsgStrategy extends BaseStrategy implements com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface {
+import java.util.Optional;
+
+public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override
     public void saveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
@@ -22,7 +25,10 @@ public class P2pMsgStrategy extends BaseStrategy implements com.leigod.modules.n
     public void sendMsg(ChannelHandlerContext ctx, JSONObject msgJson){
         byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
         SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
-        BaseStrategy.cmap.get(msgJson.getLong("toUid")).writeAndFlush(msg);
+        Optional<Channel> toUid = Optional.ofNullable(BaseStrategy.cmap.get(msgJson.getLong("toUid")));
+        if (toUid.isPresent()) {
+            toUid.get().writeAndFlush(msg);
+        }
 //        BaseStrategy.channels.find(msgJson.getString("ChannelId")).writeAndFlush(msg);
     }
 }

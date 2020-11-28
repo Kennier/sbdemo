@@ -3,9 +3,8 @@ package nettyServer.msgStrategy;
 import com.alibaba.fastjson.JSONObject;
 import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.ChannelHandlerContext;
-import nettyServer.msgStrategy.BaseStrategy;
 
-public class BindMsgStrategy extends BaseStrategy implements com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface {
+public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override
     public void msgAck(ChannelHandlerContext ctx, JSONObject msgJson) {

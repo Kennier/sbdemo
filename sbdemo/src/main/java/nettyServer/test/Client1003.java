@@ -1,13 +1,13 @@
 package nettyServer.test;
 
-import com.leigod.modules.nettyServer.SmartCarDecoder;
-import com.leigod.modules.nettyServer.SmartCarEncoder;
 import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import nettyServer.SmartCarDecoder;
+import nettyServer.SmartCarEncoder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

@@ -1,14 +1,9 @@
 package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
-import com.leigod.modules.nettyServer.msgStrategy.factory.StrategyFactory;
-import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
-import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.util.concurrent.GlobalEventExecutor;
+import nettyServer.msgStrategy.factory.StrategyFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -18,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public abstract class BaseStrategy implements com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface {
+public abstract class BaseStrategy implements BaseStrategyInterface {
 
     static ConcurrentHashMap<Long, Channel> cmap = new ConcurrentHashMap();//缓存在线uid和channelId  放redis
 //    public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -38,7 +33,7 @@ public abstract class BaseStrategy implements com.leigod.modules.nettyServer.msg
         if(msgType == -1){
             return;
         }
-        com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(msgType);
+        BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(msgType);
         if(msgType == 3){//bind
             Long fuid = msgJson.getLong("fromUid");
             cmap.put(fuid,ctx.channel());

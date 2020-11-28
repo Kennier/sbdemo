@@ -20,7 +20,7 @@ public class NettyServer {
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG,128)
                     .childOption(ChannelOption.SO_KEEPALIVE,true)
-                    .childHandler(new com.leigod.modules.nettyServer.SimpleChatServerInitializer());
+                    .childHandler(new SimpleChatServerInitializer());
 
             System.out.println("SimpleChatServer 启动了");
 

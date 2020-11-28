@@ -2,11 +2,13 @@ package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
+import java.util.Optional;
 import java.util.Set;
 
-public class ChannelMsgStrategy extends BaseStrategy implements com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface {
+public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override
     public void saveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
@@ -22,7 +24,7 @@ public class ChannelMsgStrategy extends BaseStrategy implements com.leigod.modul
     public void sendMsg(ChannelHandlerContext ctx, JSONObject msgJson){
         long chatroomId = msgJson.getLong("chatroomId");
         long fromUid = msgJson.getLong("fromUid");
-        //redis获取在线群成员及游客
+        //redis获取在线群成员及游客????
         Set<Long> userIds = BaseStrategy.roomIds.get(chatroomId);
         for (long uid: userIds){
             if(uid == fromUid){
@@ -30,7 +32,10 @@ public class ChannelMsgStrategy extends BaseStrategy implements com.leigod.modul
             }
             byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
             SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
-            BaseStrategy.cmap.get(uid).writeAndFlush(msg);
+            Optional<Channel> toUid = Optional.ofNullable(BaseStrategy.cmap.get(uid));
+            if (toUid.isPresent()) {
+                toUid.get().writeAndFlush(msg);
+            }
 //            BaseStrategy.channels.find(BaseStrategy.cmap.get(uid)).writeAndFlush(msg);
         }
     }

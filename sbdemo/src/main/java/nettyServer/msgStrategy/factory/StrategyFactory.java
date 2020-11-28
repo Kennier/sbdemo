@@ -1,16 +1,16 @@
-package com.leigod.modules.nettyServer.msgStrategy.factory;
+package nettyServer.msgStrategy.factory;
 
 import com.leigod.modules.nettyServer.enums.MsgTypeEnum;
-import com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface;
-import com.leigod.modules.nettyServer.msgStrategy.BindMsgStrategy;
-import com.leigod.modules.nettyServer.msgStrategy.ChannelMsgStrategy;
-import com.leigod.modules.nettyServer.msgStrategy.P2pMsgStrategy;
+import nettyServer.msgStrategy.BaseStrategyInterface;
+import nettyServer.msgStrategy.BindMsgStrategy;
+import nettyServer.msgStrategy.ChannelMsgStrategy;
+import nettyServer.msgStrategy.P2pMsgStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class StrategyFactory {
-    private static Map<Integer,BaseStrategyInterface> map = new HashMap<Integer,BaseStrategyInterface>();
+    private static Map<Integer, BaseStrategyInterface> map = new HashMap<Integer,BaseStrategyInterface>();
 
     static {
         for (MsgTypeEnum e: MsgTypeEnum.values()){
