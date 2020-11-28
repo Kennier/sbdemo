@@ -47,6 +47,7 @@
                 "     msgType : " + msgType + ",\r\n" +
                 "     msgId : '" + UUID.randomUUID() + "',\r\n" +
                 "     fromUid : " + 1001 + ",\r\n" +
+                "     toUid : " + 1002 + ",\r\n" +
                 "     chatroomId : " + 10086l + ",\r\n" +
                 "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
                 "     content : {\r\n" +
@@ -59,6 +60,7 @@
                 "     msgType : " + msgType + ",\r\n" +
                 "     msgId : '" + UUID.randomUUID() + "',\r\n" +
                 "     fromUid : " + 1001 + ",\r\n" +
+                "     toUid : " + 1002 + ",\r\n" +
                 "     chatroomId : " + 10086l + ",\r\n" +
                 "     createTime : " + Calendar.getInstance().getTimeInMillis() + "\r\n" +
                 "    }";

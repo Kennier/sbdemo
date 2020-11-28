@@ -87,6 +87,17 @@ public class Client1003 {
                             "                }\r\n" +
                             "    }";
                 }
+                if (msgType == 13) {
+                    s = "{\r\n" +
+                            "     msgType : " + msgType + ",\r\n" +
+                            "     msgId : '" + UUID.randomUUID() + "',\r\n" +
+                            "     fromUid : " + 1003 + ",\r\n" +
+                            "     toUid : " + 10086l + ",\r\n" +
+                            "     chatroomId : " + 10086l + ",\r\n" +
+                            "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
+                            "     channelId : '" + channelId + "'\r\n" +
+                            "    }";
+                }
                 // 获得要发送信息的字节数组
                 byte[] content = s.getBytes();
                 // 要发送信息的长度

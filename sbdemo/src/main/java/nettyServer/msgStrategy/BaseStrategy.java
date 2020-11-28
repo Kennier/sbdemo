@@ -5,27 +5,26 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import nettyServer.msgStrategy.factory.StrategyFactory;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class BaseStrategy implements BaseStrategyInterface {
 
+    //    public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    /*
+    *
+    * 下面三个变量需要放redis集群里，netty集群的时候需要用到 （现在是单机版 垃中之垃）
+    * */
     static ConcurrentHashMap<Long, Channel> cmap = new ConcurrentHashMap();//缓存在线uid和channelId  放redis
-//    public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
     static ConcurrentHashMap<Long, CopyOnWriteArraySet<Long>> roomIds = new ConcurrentHashMap<>();//群id——>在线uid
     static ConcurrentHashMap<Long, CopyOnWriteArraySet<Long>> uidRooms = new ConcurrentHashMap<>();//在线uid——>群id  接口返回
+
+    static CopyOnWriteArraySet<Long> rooms = new CopyOnWriteArraySet<>();
     static {
-        CopyOnWriteArraySet<Long> rooms = new CopyOnWriteArraySet<>();
         rooms.add(10086l);
-        uidRooms.put(1001l,rooms);
-        uidRooms.put(1002l,rooms);
-        uidRooms.put(1003l,rooms);
     }
 
     public static void handleMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
@@ -34,8 +33,8 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
             return;
         }
         BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(msgType);
+        Long fuid = msgJson.getLong("fromUid");
         if(msgType == 3){//bind
-            Long fuid = msgJson.getLong("fromUid");
             cmap.put(fuid,ctx.channel());
 //            if(roomIds.containsKey(msgJson.getLong("chatroomId"))){
             if(roomIds.containsKey(10086l)){
@@ -47,17 +46,30 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
                 roomIds.put(10086l,chatroomUids);
             }
             System.out.println("roomIds : "+roomIds.toString());
+            uidRooms.put(fuid,rooms);//测试只弄一个群
             System.out.println("uidRooms : "+uidRooms.toString());
             baseStrategyInterface.msgAck(ctx,msgJson);//ack时 返回客户端channelId 以后的消息都带着channelId  就不用放redis映射
         }
-        if(msgType == 9 || msgType == 11 || msgType == 21){//p2p chatroom robot
-            baseStrategyInterface.msgAck(ctx,msgJson);
-            baseStrategyInterface.sendMsg(ctx,msgJson);
+        if(msgType == 9 || msgType == 11 || msgType == 13 || msgType == 21){//p2p chatroom robot
+            if (msgType == 13) {
+                baseStrategyInterface.msgAck(ctx,msgJson);
+                baseStrategyInterface.sendMsg(ctx,msgJson);
+            }
             //下面的考虑异步
-//            baseStrategyInterface.saveMsg(ctx,msgJson);
+            baseStrategyInterface.updateConversationAndsaveMsg(ctx,msgJson);
+        }
+        if(msgType == 10 || msgType == 12 || msgType == 22){//p2p chatroom robot
+            //下面的考虑异步
+            baseStrategyInterface.updateConversationAndsaveMsg(ctx,msgJson);
         }
         if(msgType == 5){//正常离线
-            cmap.remove(msgJson.getLong("fromUid"));
+            cmap.remove(fuid);
+            CopyOnWriteArraySet<Long> rooms = uidRooms.get(fuid);//群id集合  接口返回
+            for (Long roomId:rooms){
+                if(roomIds.containsKey(roomId)){
+                    roomIds.get(roomId).remove(fuid);
+                }
+            }
             baseStrategyInterface.msgAck(ctx,msgJson);
         }
     }

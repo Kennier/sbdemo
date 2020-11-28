@@ -9,24 +9,21 @@ import nettyServer.proto.SmartCarProtocol;
 import java.util.Optional;
 import java.util.Set;
 
-public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
-
-    @Override
-    public void updateConversationAndsaveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
-
-        System.out.println("mq发送消息：保存消息");
-    }
+public class ChannelEnterStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override
     public void msgAck(ChannelHandlerContext ctx, JSONObject msgJson) {
         JSONObject ackMsg = new JSONObject();
-        ackMsg.put("msgType", MsgTypeEnum.CHANNEL_ACK.getValue());
+        ackMsg.put("msgType", MsgTypeEnum.CHANNEL_ENTER_ACK.getValue());
         ackMsg.put("msgId", msgJson.getString("msgId"));
         ackMsg.put("fromUid", msgJson.getLong("fromUid"));
         ackMsg.put("toUid", msgJson.getLong("toUid"));
         ackMsg.put("chatroomId",msgJson.getLong("chatroomId"));
         ackMsg.put("createTime", msgJson.getLong("createTime"));
-        System.out.println("发送ACK消息"+ackMsg.toJSONString());
+        JSONObject ackMsgContent = new JSONObject();
+        ackMsgContent.put("onlineUsers",BaseStrategy.roomIds.get(msgJson.getLong("chatroomId")));
+        ackMsg.put("content", ackMsgContent);
+        System.out.println("发送进群ACK消息"+ackMsg.toJSONString());
         byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
         SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
         ctx.writeAndFlush(msg);
@@ -34,6 +31,7 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
 
     @Override
     public void sendMsg(ChannelHandlerContext ctx, JSONObject msgJson){
+        //通知群里所有人 有人进群（在线状态改变）
         long chatroomId = msgJson.getLong("chatroomId");
         long fromUid = msgJson.getLong("fromUid");
         //redis获取在线群成员及游客????

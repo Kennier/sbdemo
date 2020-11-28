@@ -11,8 +11,8 @@ import java.util.Optional;
 public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override
-    public void saveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
-        System.out.println("mq发送消息");
+    public void updateConversationAndsaveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
+        System.out.println("mq发送消息：保存消息");
     }
 
     @Override

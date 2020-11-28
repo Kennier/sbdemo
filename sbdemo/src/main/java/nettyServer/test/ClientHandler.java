@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import nettyServer.enums.MsgTypeEnum;
 import nettyServer.proto.SmartCarProtocol;
 
 import java.nio.charset.StandardCharsets;
@@ -49,15 +50,42 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             }
             if(msgType == 9){//p2p
                 System.out.println("Client接受的p2p信息::::::::::" + msgBody);
+                JSONObject ackMsg = new JSONObject();
+                ackMsg.put("msgType", MsgTypeEnum.P2P_ACK.getValue());
+                ackMsg.put("msgId", msgJson.getString("msgId"));
+                ackMsg.put("fromUid", msgJson.getLong("toUid"));
+                ackMsg.put("toUid",msgJson.getLong("fromUid"));
+                ackMsg.put("createTime", msgJson.getLong("createTime"));
+                System.out.println("发送客户端ACK消息"+ackMsg.toJSONString());
+                byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
+                SmartCarProtocol ack = new SmartCarProtocol(msgByte.length,msgByte);
+                ctx.writeAndFlush(ack);
             }
             if(msgType == 10){//p2p
-                System.out.println("Client接受的p2pACK信息::::::::::" + msgBody);
+                System.out.println("Client接受的服务端 p2pACK信息::::::::::" + msgBody);
             }
             if(msgType == 11){//群聊
                 System.out.println("Client接受的群聊信息::::::::::" + msgBody);
+                JSONObject ackMsg = new JSONObject();
+                ackMsg.put("msgType", MsgTypeEnum.CHANNEL_ACK.getValue());
+                ackMsg.put("msgId", msgJson.getString("msgId"));
+                ackMsg.put("fromUid", msgJson.getLong("toUid"));
+                ackMsg.put("toUid", msgJson.getLong("fromUid"));
+                ackMsg.put("chatroomId",msgJson.getLong("chatroomId"));
+                ackMsg.put("createTime", msgJson.getLong("createTime"));
+                System.out.println("发送客户端ACK消息"+ackMsg.toJSONString());
+                byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
+                SmartCarProtocol ack = new SmartCarProtocol(msgByte.length,msgByte);
+                ctx.writeAndFlush(ack);
             }
             if(msgType == 12){//群聊ACK
-                System.out.println("Client接受的群聊ACK信息::::::::::" + msgBody);
+                System.out.println("Client接受的服务端 群聊ACK信息::::::::::" + msgBody);
+            }
+            if(msgType == 13){//进群
+                System.out.println("Client接受的服务端 群聊信息::::::::::" + msgBody);
+            }
+            if(msgType == 14){//进群ACK
+                System.out.println("Client接受的服务端 进群ACK信息 获取在线人员id::::::::::" + msgBody);
             }
 
         }catch (Exception e){
