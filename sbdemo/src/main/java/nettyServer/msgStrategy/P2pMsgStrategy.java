@@ -1,11 +1,10 @@
 package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
-import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
-import nettyServer.msgStrategy.BaseStrategy;
+import nettyServer.enums.MsgTypeEnum;
+import nettyServer.proto.SmartCarProtocol;
 
 import java.util.Optional;
 
@@ -18,7 +17,16 @@ public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterfac
 
     @Override
     public void msgAck(ChannelHandlerContext ctx, JSONObject msgJson) {
-        System.out.println("发送ACK消息");//到底要不要服务端ack
+        JSONObject ackMsg = new JSONObject();
+        ackMsg.put("msgType", MsgTypeEnum.P2P_ACK.getValue());
+        ackMsg.put("msgId", msgJson.getString("msgId"));
+        ackMsg.put("fromUid", msgJson.getLong("fromUid"));
+        ackMsg.put("toUid",msgJson.getLong("toUid"));
+        ackMsg.put("createTime", msgJson.getLong("createTime"));
+        System.out.println("发送ACK消息"+ackMsg.toJSONString());
+        byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
+        SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
+        ctx.writeAndFlush(msg);
     }
 
     @Override

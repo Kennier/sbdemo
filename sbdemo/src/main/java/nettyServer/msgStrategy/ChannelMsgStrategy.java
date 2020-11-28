@@ -1,9 +1,10 @@
 package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
-import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import nettyServer.enums.MsgTypeEnum;
+import nettyServer.proto.SmartCarProtocol;
 
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +18,16 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
 
     @Override
     public void msgAck(ChannelHandlerContext ctx, JSONObject msgJson) {
-        System.out.println("发送ACK消息");//到底要不要服务端ack
+        JSONObject ackMsg = new JSONObject();
+        ackMsg.put("msgType", MsgTypeEnum.CHANNEL_ACK.getValue());
+        ackMsg.put("msgId", msgJson.getString("msgId"));
+        ackMsg.put("fromUid", msgJson.getLong("fromUid"));
+        ackMsg.put("chatroomId",msgJson.getLong("chatroomId"));
+        ackMsg.put("createTime", msgJson.getLong("createTime"));
+        System.out.println("发送ACK消息"+ackMsg.toJSONString());
+        byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
+        SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
+        ctx.writeAndFlush(msg);
     }
 
     @Override

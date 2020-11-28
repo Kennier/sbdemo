@@ -51,10 +51,10 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
             baseStrategyInterface.msgAck(ctx,msgJson);//ack时 返回客户端channelId 以后的消息都带着channelId  就不用放redis映射
         }
         if(msgType == 9 || msgType == 11 || msgType == 21){//p2p chatroom robot
+            baseStrategyInterface.msgAck(ctx,msgJson);
             baseStrategyInterface.sendMsg(ctx,msgJson);
             //下面的考虑异步
 //            baseStrategyInterface.saveMsg(ctx,msgJson);
-//            baseStrategyInterface.msgAck(ctx,msgJson);
         }
         if(msgType == 5){//正常离线
             cmap.remove(msgJson.getLong("fromUid"));

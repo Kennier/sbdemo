@@ -1,9 +1,9 @@
 package nettyServer;
 
-import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import nettyServer.proto.SmartCarProtocol;
 
 /**
  * <pre>

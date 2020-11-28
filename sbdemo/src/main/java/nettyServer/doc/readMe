@@ -13,3 +13,52 @@
                  cmdInChatType : int, //contentType为3的时候 是哪种子类型 1加入频道 2设置管理员...
                 },
     }
+
+
+3:bind/bindAck消息      "{\r\n" +
+                "     msgType : " + msgType + ",\r\n" +
+                "     msgId : '" + UUID.randomUUID() + "',\r\n" +
+                "     fromUid : " + 1001 + ",\r\n" +
+                "     toUid : " + -1 + ",\r\n" +
+                "     chatroomId : " + null + ",\r\n" +
+                "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
+                "     channelId : '" + channelId + "' \r\n" +
+                "    }"
+9:p2p消息       "{\r\n" +
+                "     msgType : " + msgType + ",\r\n" +
+                "     msgId : '" + UUID.randomUUID() + "',\r\n" +
+                "     fromUid : " + 1001 + ",\r\n" +
+                "     toUid : " + 1002 + ",\r\n" +
+                "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
+                "     content : {\r\n" +
+                "                 contentType : '1',\r\n" +
+                "                 contentText : '武林大会空间广阔的发',\r\n" +
+                "                 cmdInChatType : '0' \r\n" +
+                "                }\r\n" +
+                "    }";
+10:p2pACK       "{\r\n" +
+                "     msgType : " + msgType + ",\r\n" +
+                "     msgId : '" + UUID.randomUUID() + "',\r\n" +
+                "     fromUid : " + 1001 + ",\r\n" +
+                "     toUid : " + 1002 + ",\r\n" +
+                "     createTime : " + Calendar.getInstance().getTimeInMillis() + "\r\n" +
+                "    }";
+11:群聊消息     "{\r\n" +
+                "     msgType : " + msgType + ",\r\n" +
+                "     msgId : '" + UUID.randomUUID() + "',\r\n" +
+                "     fromUid : " + 1001 + ",\r\n" +
+                "     chatroomId : " + 10086l + ",\r\n" +
+                "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
+                "     content : {\r\n" +
+                "                 contentType : '1',\r\n" +
+                "                 contentText : '我是群消息呀',\r\n" +
+                "                 cmdInChatType : '0' \r\n" +
+                "                }\r\n" +
+                "    }";
+12:群聊Ack     "{\r\n" +
+                "     msgType : " + msgType + ",\r\n" +
+                "     msgId : '" + UUID.randomUUID() + "',\r\n" +
+                "     fromUid : " + 1001 + ",\r\n" +
+                "     chatroomId : " + 10086l + ",\r\n" +
+                "     createTime : " + Calendar.getInstance().getTimeInMillis() + "\r\n" +
+                "    }";

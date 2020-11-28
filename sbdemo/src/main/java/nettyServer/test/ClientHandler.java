@@ -2,10 +2,10 @@ package nettyServer.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import nettyServer.proto.SmartCarProtocol;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -39,7 +39,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             String msgBody = new String(body.getContent(), StandardCharsets.UTF_8);
 
             JSONObject msgJson = JSON.parseObject(msgBody);
-            System.out.println("Client接受的客户端的信息 :" + msgBody);
             int msgType = Optional.ofNullable(msgJson.getIntValue("msgType")).orElse(-1);
             if(msgType == -1){
                 return;
@@ -49,7 +48,16 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
                 System.out.println("Client接受的ChannelId :" + Client1001.channelId);
             }
             if(msgType == 9){//p2p
-                System.out.println("Client接受的客户端的信息::::::::::" + msgBody);
+                System.out.println("Client接受的p2p信息::::::::::" + msgBody);
+            }
+            if(msgType == 10){//p2p
+                System.out.println("Client接受的p2pACK信息::::::::::" + msgBody);
+            }
+            if(msgType == 11){//群聊
+                System.out.println("Client接受的群聊信息::::::::::" + msgBody);
+            }
+            if(msgType == 12){//群聊ACK
+                System.out.println("Client接受的群聊ACK信息::::::::::" + msgBody);
             }
 
         }catch (Exception e){

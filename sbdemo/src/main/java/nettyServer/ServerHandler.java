@@ -2,11 +2,11 @@ package nettyServer;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import nettyServer.msgStrategy.BaseStrategy;
+import nettyServer.proto.SmartCarProtocol;
 
 import java.nio.charset.StandardCharsets;
 

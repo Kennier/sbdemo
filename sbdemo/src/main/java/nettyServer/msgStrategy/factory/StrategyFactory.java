@@ -1,6 +1,6 @@
 package nettyServer.msgStrategy.factory;
 
-import com.leigod.modules.nettyServer.enums.MsgTypeEnum;
+import nettyServer.enums.MsgTypeEnum;
 import nettyServer.msgStrategy.BaseStrategyInterface;
 import nettyServer.msgStrategy.BindMsgStrategy;
 import nettyServer.msgStrategy.ChannelMsgStrategy;

@@ -1,10 +1,12 @@
-package com.leigod.modules.nettyServer.enums;
+package nettyServer.enums;
 
 public enum MsgTypeEnum {
 
     BIND_MSG(3,"绑定消息类型"),
     P2P_MSG(9,"私聊消息类型"),
+    P2P_ACK(10,"私聊消息ACK"),
     CHANNEL_MSG(11,"聊天室消息类型"),
+    CHANNEL_ACK(12,"聊天室消息ACK"),
     ROBOT_MSG(21,"机器人消息通知"),
     ;
 

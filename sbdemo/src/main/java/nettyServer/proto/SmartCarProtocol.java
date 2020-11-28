@@ -1,4 +1,6 @@
-package com.leigod.modules.nettyServer.proto;
+package nettyServer.proto;
+
+import nettyServer.proto.ConstValue;
 
 import java.util.Arrays;
 
