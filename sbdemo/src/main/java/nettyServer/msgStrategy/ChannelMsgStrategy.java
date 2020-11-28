@@ -1,14 +1,12 @@
-package com.leigod.modules.nettyServer.msgStrategy;
+package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.ChannelHandlerContext;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
-public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInterface{
+public class ChannelMsgStrategy extends BaseStrategy implements com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface {
 
     @Override
     public void saveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {

@@ -1,4 +1,4 @@
-package com.leigod.modules.nettyServer.test;
+package nettyServer.test;
 
 import com.leigod.modules.nettyServer.SmartCarDecoder;
 import com.leigod.modules.nettyServer.SmartCarEncoder;

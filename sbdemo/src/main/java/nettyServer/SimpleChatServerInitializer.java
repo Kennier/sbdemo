@@ -1,4 +1,4 @@
-package com.leigod.modules.nettyServer;
+package nettyServer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

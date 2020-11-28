@@ -1,4 +1,4 @@
-package com.leigod.modules.nettyServer;
+package nettyServer;
 
 import com.leigod.modules.nettyServer.proto.SmartCarProtocol;
 import io.netty.buffer.ByteBuf;

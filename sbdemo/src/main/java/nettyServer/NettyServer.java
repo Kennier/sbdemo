@@ -1,4 +1,4 @@
-package com.leigod.modules.nettyServer;
+package nettyServer;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -20,7 +20,7 @@ public class NettyServer {
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG,128)
                     .childOption(ChannelOption.SO_KEEPALIVE,true)
-                    .childHandler(new SimpleChatServerInitializer());
+                    .childHandler(new com.leigod.modules.nettyServer.SimpleChatServerInitializer());
 
             System.out.println("SimpleChatServer 启动了");
 

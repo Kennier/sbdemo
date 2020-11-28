@@ -1,4 +1,4 @@
-package com.leigod.modules.nettyServer.msgStrategy;
+package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.leigod.modules.nettyServer.msgStrategy.factory.StrategyFactory;
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public abstract class BaseStrategy implements BaseStrategyInterface {
+public abstract class BaseStrategy implements com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface {
 
     static ConcurrentHashMap<Long, Channel> cmap = new ConcurrentHashMap();//缓存在线uid和channelId  放redis
 //    public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -38,7 +38,7 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
         if(msgType == -1){
             return;
         }
-        BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(msgType);
+        com.leigod.modules.nettyServer.msgStrategy.BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(msgType);
         if(msgType == 3){//bind
             Long fuid = msgJson.getLong("fromUid");
             cmap.put(fuid,ctx.channel());
