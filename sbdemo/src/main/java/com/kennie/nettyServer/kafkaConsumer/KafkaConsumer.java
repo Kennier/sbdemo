@@ -1,17 +1,18 @@
 package com.kennie.nettyServer.kafkaConsumer;
 
+import com.kennie.nettyServer.msgStrategy.HandleKafkaMsg;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 @Component
 public class KafkaConsumer {
+
+    @Autowired
+    private HandleKafkaMsg handleKafkaMsg;
 
     // 消费监听
     @KafkaListener(topics = {"topic1"})
@@ -26,6 +27,7 @@ public class KafkaConsumer {
         for(TopicPartition topicPartition:consumerRecords.partitions()){
             for (ConsumerRecord<Object,String> consumerRecord:consumerRecords.records(topicPartition)){
                 System.out.println("消费时间："+System.currentTimeMillis()+"  "+consumerRecord.value());
+                handleKafkaMsg.handleP2P("");
             }
         }
     }
@@ -36,6 +38,7 @@ public class KafkaConsumer {
         for(TopicPartition topicPartition:consumerRecords.partitions()){
             for (ConsumerRecord<Object,String> consumerRecord:consumerRecords.records(topicPartition)){
                 System.out.println("消费时间："+System.currentTimeMillis()+"  "+consumerRecord.value());
+                handleKafkaMsg.handleChannelOrChannelEnter("");
             }
         }
     }
@@ -46,6 +49,7 @@ public class KafkaConsumer {
         for(TopicPartition topicPartition:consumerRecords.partitions()){
             for (ConsumerRecord<Object,String> consumerRecord:consumerRecords.records(topicPartition)){
                 System.out.println("消费时间："+System.currentTimeMillis()+"  "+consumerRecord.value());
+                handleKafkaMsg.handleChannelOrChannelEnter("");
             }
         }
     }

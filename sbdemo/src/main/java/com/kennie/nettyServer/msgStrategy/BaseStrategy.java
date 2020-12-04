@@ -1,13 +1,13 @@
 package com.kennie.nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
+import com.kennie.nettyServer.msgStrategy.factory.StrategyFactory;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import com.kennie.nettyServer.msgStrategy.factory.StrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -29,14 +29,14 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
      *
      * 下面三个变量需要放redis集群里，netty集群的时候需要用到 （现在是单机版 垃中之垃）
      * */
-    static ConcurrentHashMap<Long, CopyOnWriteArraySet<Long>> roomIds = new ConcurrentHashMap<>();//群id——>在线uid
 
-    static ConcurrentHashMap<Long, ChannelId> cmap = new ConcurrentHashMap();//缓存本机在线uid和channelId  放redis
-    public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);//本机存储的channel
+    static ConcurrentHashMap<Long, ChannelId> cmap = new ConcurrentHashMap<Long, ChannelId>();//缓存本机在线uid和channelId  放redis
+    static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);//本机存储的channel
 
+    static ConcurrentHashMap<Long, CopyOnWriteArraySet<Long>> roomIds = new ConcurrentHashMap<>();//群id——>在线uid（连接在本机的uid）
     static ConcurrentHashMap<Long, CopyOnWriteArraySet<Long>> uidRooms = new ConcurrentHashMap<>();//在线uid——>群id  接口返回
 
-    static CopyOnWriteArraySet<Long> rooms = new CopyOnWriteArraySet<>();
+    private static CopyOnWriteArraySet<Long> rooms = new CopyOnWriteArraySet<>();
     static {
         rooms.add(10086l);
     }
@@ -56,24 +56,30 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
              * 存储在哪台服务器  消费kafka消息的时候，队列名称按照channelMsg-InetAddress.getLocalHost()
              * 需要处理多端登陆挤掉的消息★★★★★★★★★★★★★★
              */
-            redisTemplate.opsForHash().put("online:userId:channelId",fuid, InetAddress.getLocalHost());
+            redisTemplate.opsForHash().put("online:userId:channelIp",fuid, InetAddress.getLocalHost());
 
-//            if(roomIds.containsKey(msgJson.getLong("chatroomId"))){
-            if(roomIds.containsKey(10086l)){
-                CopyOnWriteArraySet<Long> chatroomUids = roomIds.get(10086l);
-                chatroomUids.add(fuid);
-            }else {
-                CopyOnWriteArraySet<Long> chatroomUids = new CopyOnWriteArraySet<>();
-                chatroomUids.add(fuid);
-                roomIds.put(10086l,chatroomUids);
+            //获取人所在的群  处理加群机器人消息的时候需要变动这两个属性★★★★★★★★★★★★★★
+            for (Long room: rooms){
+                if(roomIds.containsKey(room)){
+                    CopyOnWriteArraySet<Long> chatroomUids = roomIds.get(room);
+                    chatroomUids.add(fuid);
+                }else {
+                    CopyOnWriteArraySet<Long> chatroomUids = new CopyOnWriteArraySet<>();
+                    chatroomUids.add(fuid);
+                    roomIds.put(room,chatroomUids);
+                }
+                redisTemplate.opsForSet().add("online:channel:uids"+room, String.valueOf(fuid));//群在线的人
+//                redisTemplate.opsForSet().add("online:uid:channels"+fuid, String.valueOf(room));//人在线的群
             }
             System.out.println("roomIds : "+roomIds.toString());
             uidRooms.put(fuid,rooms);//测试只弄一个群
             System.out.println("uidRooms : "+uidRooms.toString());
             baseStrategyInterface.msgAck(ctx,msgJson);//ack时 返回客户端channelId 以后的消息都带着channelId  就不用放redis映射
+
+            baseStrategyInterface.sendMsg(ctx,msgJson);//还是要推给群里所有在线的人（老子上线了）
         }
         if(msgType == 9 || msgType == 11 || msgType == 13 || msgType == 21){//p2p chatroom robot
-            if (msgType == 13) {
+            if (msgType == 13) {//只有游客会有进群动作 成员上线就进群了
                 baseStrategyInterface.msgAck(ctx,msgJson);
                 baseStrategyInterface.sendMsg(ctx,msgJson);
             }

@@ -1,8 +1,10 @@
 package com.kennie.nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
-import io.netty.channel.ChannelHandlerContext;
 import com.kennie.nettyServer.proto.SmartCarProtocol;
+import io.netty.channel.ChannelHandlerContext;
+
+import java.util.Set;
 
 public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
@@ -13,6 +15,29 @@ public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterfa
         String ackString = msgJson.toJSONString();
         SmartCarProtocol ack = new SmartCarProtocol(ackString.getBytes().length,ackString.getBytes());
         ctx.channel().writeAndFlush(ack);
+    }
+
+    @Override
+    public void sendMsg(ChannelHandlerContext ctx, JSONObject msgJson){
+
+        byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
+        SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
+
+        Long fromUid = msgJson.getLong("fromUid");
+        Set<Long> rooms = BaseStrategy.uidRooms.get(fromUid);
+        for(Long room:rooms){//给本机连接的所有群的所有在线成员发消息
+            Set<Long> uids = BaseStrategy.roomIds.get(room);
+            for (Long uid:uids){
+                if(uid.equals(fromUid)){
+                    continue;
+                }
+                BaseStrategy.channels.find(BaseStrategy.cmap.get(uid)).writeAndFlush(msg);
+            }
+        }
+        /**
+         * 往kafka发送消息 bind-p
+         * 分发服务消费消息 根据redis所有在线群里的所有人员id(和fromUid在同一台机器的不发)进行kafka分发 p2pMsg-consumer-{ip}
+         */
     }
 
 }
