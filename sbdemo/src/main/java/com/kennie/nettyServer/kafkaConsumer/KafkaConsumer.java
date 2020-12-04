@@ -21,7 +21,7 @@ public class KafkaConsumer {
     }
 
     // 批量消费监听
-    @KafkaListener(groupId = "consumerGroup",topics = "kafka.consume.topic.p2p")
+    @KafkaListener(groupId = "consumerGroup",topics = "${kafka.consume.topic.p2p}")
     public void onP2PMessage(ConsumerRecords<Object,String> consumerRecords) {
         for(TopicPartition topicPartition:consumerRecords.partitions()){
             for (ConsumerRecord<Object,String> consumerRecord:consumerRecords.records(topicPartition)){
