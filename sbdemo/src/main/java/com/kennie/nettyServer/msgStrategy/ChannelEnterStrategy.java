@@ -1,10 +1,10 @@
-package nettyServer.msgStrategy;
+package com.kennie.nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import nettyServer.enums.MsgTypeEnum;
-import nettyServer.proto.SmartCarProtocol;
+import io.netty.channel.ChannelId;
+import com.kennie.nettyServer.enums.MsgTypeEnum;
+import com.kennie.nettyServer.proto.SmartCarProtocol;
 
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +36,7 @@ public class ChannelEnterStrategy extends BaseStrategy implements BaseStrategyIn
         long fromUid = msgJson.getLong("fromUid");
         //redis获取在线群成员及游客????
         Set<Long> userIds = BaseStrategy.roomIds.get(chatroomId);
+        //单机版
         for (long uid: userIds){
             if(uid == fromUid){
                 continue;
@@ -43,11 +44,16 @@ public class ChannelEnterStrategy extends BaseStrategy implements BaseStrategyIn
             msgJson.put("toUid",uid);
             byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
             SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
-            Optional<Channel> toUid = Optional.ofNullable(BaseStrategy.cmap.get(uid));
-            if (toUid.isPresent()) {
-                toUid.get().writeAndFlush(msg);
+            Optional<ChannelId> channelId = Optional.ofNullable(BaseStrategy.cmap.get(uid));
+            if (channelId.isPresent()) {//单机版 或者就在本机
+                BaseStrategy.channels.find(channelId.get()).writeAndFlush(msg);
             }
-//            BaseStrategy.channels.find(BaseStrategy.cmap.get(uid)).writeAndFlush(msg);
         }
+        /**
+         * 集群版
+         * 往kafka发送消息 channelEnterMsg-p
+         * 分发服务消费消息
+         * 根据redis在线群id进行kafka分发(和fromUid在同一台机器的不发)到channelEnterMsg-consumer-{ip}
+         */
     }
 }

@@ -1,4 +1,4 @@
-//package com.leigod.modules.nettyServer;
+//package com.leigod.modules.com.kennie.nettyServer;
 //
 //import com.leigod.common.system.vo.LoginUser;
 //import io.netty.channel.Channel;

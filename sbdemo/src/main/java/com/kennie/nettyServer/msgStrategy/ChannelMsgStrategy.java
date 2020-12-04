@@ -1,10 +1,10 @@
-package nettyServer.msgStrategy;
+package com.kennie.nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import nettyServer.enums.MsgTypeEnum;
-import nettyServer.proto.SmartCarProtocol;
+import io.netty.channel.ChannelId;
+import com.kennie.nettyServer.enums.MsgTypeEnum;
+import com.kennie.nettyServer.proto.SmartCarProtocol;
 
 import java.util.Optional;
 import java.util.Set;
@@ -13,7 +13,10 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
 
     @Override
     public void updateConversationAndsaveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
-
+        /**
+         * 发送消息到存储队列 channelMsg-p-s
+         * 存储服务进行存储并添加未读（或是记录群最后一条消息）
+         */
         System.out.println("mq发送消息：保存消息");
     }
 
@@ -45,11 +48,16 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
             msgJson.put("toUid",uid);
             byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
             SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
-            Optional<Channel> toUid = Optional.ofNullable(BaseStrategy.cmap.get(uid));
-            if (toUid.isPresent()) {
-                toUid.get().writeAndFlush(msg);
+            Optional<ChannelId> channelId = Optional.ofNullable(BaseStrategy.cmap.get(uid));
+            if (channelId.isPresent()) {//单机 或者就在本机
+                BaseStrategy.channels.find(channelId.get()).writeAndFlush(msg);
             }
-//            BaseStrategy.channels.find(BaseStrategy.cmap.get(uid)).writeAndFlush(msg);
         }
+        /**
+         * 集群版
+         * 往kafka发送消息 channelMsg-p
+         * 分发服务消费消息
+         * 根据redis在线群id进行kafka分发(和fromUid在同一台机器的不发)到channelMsg-consumer-{ip}
+         */
     }
 }

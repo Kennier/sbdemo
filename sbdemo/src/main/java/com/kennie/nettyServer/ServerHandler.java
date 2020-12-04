@@ -1,12 +1,12 @@
-package nettyServer;
+package com.kennie.nettyServer;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import nettyServer.msgStrategy.BaseStrategy;
-import nettyServer.proto.SmartCarProtocol;
+import com.kennie.nettyServer.msgStrategy.BaseStrategy;
+import com.kennie.nettyServer.proto.SmartCarProtocol;
 
 import java.nio.charset.StandardCharsets;
 

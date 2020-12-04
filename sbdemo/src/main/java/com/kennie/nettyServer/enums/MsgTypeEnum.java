@@ -1,4 +1,4 @@
-package nettyServer.enums;
+package com.kennie.nettyServer.enums;
 
 public enum MsgTypeEnum {
 

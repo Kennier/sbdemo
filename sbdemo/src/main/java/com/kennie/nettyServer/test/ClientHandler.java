@@ -1,12 +1,12 @@
-package nettyServer.test;
+package com.kennie.nettyServer.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import nettyServer.enums.MsgTypeEnum;
-import nettyServer.proto.SmartCarProtocol;
+import com.kennie.nettyServer.enums.MsgTypeEnum;
+import com.kennie.nettyServer.proto.SmartCarProtocol;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;

@@ -1,7 +1,7 @@
-package nettyServer.msgStrategy.factory;
+package com.kennie.nettyServer.msgStrategy.factory;
 
-import nettyServer.enums.MsgTypeEnum;
-import nettyServer.msgStrategy.*;
+import com.kennie.nettyServer.enums.MsgTypeEnum;
+import com.kennie.nettyServer.msgStrategy.*;
 
 import java.util.HashMap;
 import java.util.Map;

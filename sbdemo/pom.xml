@@ -32,6 +32,11 @@
             <version>1.2.60</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
         <!-- springboot对redis的集成-->
 <!--        <dependency>-->
 <!--            <groupId>org.springframework.data</groupId>-->

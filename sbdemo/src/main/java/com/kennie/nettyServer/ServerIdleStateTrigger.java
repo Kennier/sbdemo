@@ -1,10 +1,10 @@
-package nettyServer;
+package com.kennie.nettyServer;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import nettyServer.msgStrategy.BaseStrategy;
+import com.kennie.nettyServer.msgStrategy.BaseStrategy;
 
 /**
  * <p>在规定时间内未收到客户端的任何数据包, 将主动断开该连接</p>

@@ -1,8 +1,8 @@
-package nettyServer.msgStrategy;
+package com.kennie.nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
-import nettyServer.proto.SmartCarProtocol;
+import com.kennie.nettyServer.proto.SmartCarProtocol;
 
 public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 

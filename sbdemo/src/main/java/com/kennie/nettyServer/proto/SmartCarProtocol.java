@@ -1,6 +1,4 @@
-package nettyServer.proto;
-
-import nettyServer.proto.ConstValue;
+package com.kennie.nettyServer.proto;
 
 import java.util.Arrays;
 

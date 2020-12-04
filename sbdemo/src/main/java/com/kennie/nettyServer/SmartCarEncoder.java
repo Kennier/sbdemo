@@ -1,9 +1,9 @@
-package nettyServer;
+package com.kennie.nettyServer;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import nettyServer.proto.SmartCarProtocol;
+import com.kennie.nettyServer.proto.SmartCarProtocol;
 
 /**
  * <pre>

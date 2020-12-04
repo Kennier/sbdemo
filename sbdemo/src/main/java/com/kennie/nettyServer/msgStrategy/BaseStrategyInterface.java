@@ -1,4 +1,4 @@
-package nettyServer.msgStrategy;
+package com.kennie.nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
