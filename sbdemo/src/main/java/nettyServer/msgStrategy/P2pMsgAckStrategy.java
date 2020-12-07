@@ -2,12 +2,14 @@ package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.stereotype.Component;
 
 /**
  * 接收客户端ACK
  *
  *
  */
+@Component("p2p_ack")
 public class P2pMsgAckStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override

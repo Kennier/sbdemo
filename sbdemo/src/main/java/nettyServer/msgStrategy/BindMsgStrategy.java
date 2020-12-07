@@ -3,10 +3,17 @@ package nettyServer.msgStrategy;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
 import nettyServer.proto.SmartCarProtocol;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+@Component("bind")
 public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
+
+    @Autowired
+    KafkaTemplate kafkaTemplate;
 
     @Override
     public void msgAck(ChannelHandlerContext ctx, JSONObject msgJson) {

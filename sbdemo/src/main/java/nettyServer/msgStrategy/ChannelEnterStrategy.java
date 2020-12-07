@@ -5,10 +5,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import nettyServer.enums.MsgTypeEnum;
 import nettyServer.proto.SmartCarProtocol;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.Set;
 
+@Component("channelEnter")
 public class ChannelEnterStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override

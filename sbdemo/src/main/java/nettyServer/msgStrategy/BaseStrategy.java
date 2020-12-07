@@ -1,6 +1,7 @@
 package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
+import nettyServer.enums.MsgTypeEnum;
 import nettyServer.msgStrategy.factory.StrategyFactory;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -46,7 +47,7 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
         if(msgType == -1){
             return;
         }
-        BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(msgType);
+        BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(MsgTypeEnum.matchValue(msgType).getKey());
         Long fuid = msgJson.getLong("fromUid");
         if(msgType == 3){//bind
             cmap.put(fuid,ctx.channel().id());
@@ -78,13 +79,14 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
 
             baseStrategyInterface.sendMsg(ctx,msgJson);//还是要推给群里所有在线的人（老子上线了）
         }
-        if(msgType == 9 || msgType == 11 || msgType == 13 || msgType == 21){//p2p chatroom robot
-            if (msgType == 13) {//只有游客会有进群动作 成员上线就进群了
-                baseStrategyInterface.msgAck(ctx,msgJson);
-                baseStrategyInterface.sendMsg(ctx,msgJson);
+        if(msgType == 9 || msgType == 11 || msgType == 13 || msgType == 21){//p2p chatroom chatroomAction robot
+            //只有游客会有进群动作 成员上线就进群了
+            baseStrategyInterface.msgAck(ctx,msgJson);
+            baseStrategyInterface.sendMsg(ctx,msgJson);
+            if (msgType != 13) {
+                //下面的考虑异步
+                baseStrategyInterface.updateConversationAndsaveMsg(ctx,msgJson);
             }
-            //下面的考虑异步
-            baseStrategyInterface.updateConversationAndsaveMsg(ctx,msgJson);
         }
         if(msgType == 10 || msgType == 12 || msgType == 22){//p2p chatroom robot
             //下面的考虑异步

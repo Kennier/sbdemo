@@ -2,25 +2,27 @@ package nettyServer.enums;
 
 public enum MsgTypeEnum {
 
-    BIND_MSG(3,"绑定消息类型"),
+    BIND_MSG("bind",3,"绑定消息类型"),
 
-    P2P_MSG(9,"私聊消息类型"),
-    P2P_ACK(10,"私聊消息ACK"),
+    P2P_MSG("p2p",9,"私聊消息类型"),
+    P2P_ACK("p2p_ack",10,"私聊消息ACK"),
 
-    CHANNEL_MSG(11,"聊天室消息类型"),
-    CHANNEL_ACK(12,"聊天室消息ACK"),
-    CHANNEL_ENTER(13,"进入聊天室"),
-    CHANNEL_ENTER_ACK(14,"进入聊天室ACK"),
-    CHANNEL_ACTION(15,"聊天室操作"),
+    CHANNEL_MSG("channel",11,"聊天室消息类型"),
+    CHANNEL_ACK("channel_ack",12,"聊天室消息ACK"),
+    CHANNEL_ENTER("channelEnter",13,"进入聊天室"),
+    CHANNEL_ENTER_ACK("channelEnter_ack",14,"进入聊天室ACK"),
+    CHANNEL_ACTION("channelAction",15,"聊天室操作"),
 
-    ROBOT_MSG(21,"机器人消息通知"),
-    ROBOT_ACK(22,"机器人消息ACK"),
+    ROBOT_MSG("robot",21,"机器人消息通知"),
+    ROBOT_ACK("robot_ack",22,"机器人消息ACK"),
     ;
 
+    private final String key;
     private final Integer value;
     private String desc;
 
-    MsgTypeEnum(Integer value, String desc) {
+    MsgTypeEnum(String key,Integer value, String desc) {
+        this.key = key;
         this.value = value;
         this.desc = desc;
     }
@@ -64,6 +66,10 @@ public enum MsgTypeEnum {
 
     public Integer getValue() {
         return this.value;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
     public void setDesc(String desc) {

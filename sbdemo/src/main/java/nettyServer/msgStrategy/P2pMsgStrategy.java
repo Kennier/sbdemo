@@ -5,9 +5,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import nettyServer.enums.MsgTypeEnum;
 import nettyServer.proto.SmartCarProtocol;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component("p2p")
 public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override

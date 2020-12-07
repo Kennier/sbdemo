@@ -2,7 +2,9 @@ package nettyServer.msgStrategy;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.stereotype.Component;
 
+@Component("channel_ack")
 public class ChannelMsgAckStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Override

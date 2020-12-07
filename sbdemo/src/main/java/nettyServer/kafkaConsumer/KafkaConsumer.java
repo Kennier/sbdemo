@@ -1,6 +1,6 @@
 package nettyServer.kafkaConsumer;
 
-import com.kennie.nettyServer.msgStrategy.HandleKafkaMsg;
+import nettyServer.msgStrategy.HandleKafkaMsg;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
