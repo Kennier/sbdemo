@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import com.kennie.nettyServer.msgStrategy.BaseStrategy;
-import com.kennie.nettyServer.proto.SmartCarProtocol;
+import nettyServer.msgStrategy.BaseStrategy;
+import nettyServer.proto.SmartCarProtocol;
 
 import java.nio.charset.StandardCharsets;
 

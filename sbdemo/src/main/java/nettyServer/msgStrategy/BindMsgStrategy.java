@@ -45,6 +45,7 @@ public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterfa
          * 往kafka发送消息 bind-p
          * 分发服务消费消息 根据redis所有在线群里的所有人员id(和fromUid在同一台机器的不发)进行kafka分发 p2pMsg-consumer-{ip}
          */
+        kafkaTemplate.send("bind-p",msgJson);
     }
 
 }

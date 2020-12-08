@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import nettyServer.enums.MsgTypeEnum;
 import nettyServer.proto.SmartCarProtocol;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -13,12 +15,16 @@ import java.util.Set;
 @Component("channel")
 public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
+    @Autowired
+    KafkaTemplate kafkaTemplate;
+
     @Override
     public void updateConversationAndsaveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
         /**
-         * 发送消息到存储队列 channelMsg-p-s
+         * 发送消息到存储队列 channelMsg-s-p
          * 存储服务进行存储并添加未读（或是记录群最后一条消息）
          */
+        kafkaTemplate.send("channelMsg-s-p",msgJson);
         System.out.println("mq发送消息：保存消息");
     }
 
@@ -61,5 +67,6 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
          * 分发服务消费消息
          * 根据redis在线群id进行kafka分发(和fromUid在同一台机器的不发)到channelMsg-consumer-{ip}
          */
+        kafkaTemplate.send("channelMsg-p",msgJson);
     }
 }

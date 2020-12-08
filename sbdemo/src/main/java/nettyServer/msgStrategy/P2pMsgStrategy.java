@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import nettyServer.enums.MsgTypeEnum;
 import nettyServer.proto.SmartCarProtocol;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -12,12 +14,16 @@ import java.util.Optional;
 @Component("p2p")
 public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
+    @Autowired
+    KafkaTemplate kafkaTemplate;
+
     @Override
     public void updateConversationAndsaveMsg(ChannelHandlerContext ctx, JSONObject msgJson) {
         /**
-         * 发送消息到存储队列 p2pMsg-p-s
+         * 发送消息到存储队列 p2pMsg-s-p
          * 存储服务进行存储并添加未读（或是记录最后一条消息）
          */
+        kafkaTemplate.send("p2pMsg-s-p",msgJson);
         System.out.println("mq发送消息：保存消息");
     }
 
@@ -50,6 +56,7 @@ public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterfac
              * 往kafka发送消息 p2pMsg-p
              * 分发服务消费消息 根据redis在线群id进行kafka分发 p2pMsg-consumer-{ip}
              */
+            kafkaTemplate.send("p2pMsg-p",msgJson);
         }
     }
 }

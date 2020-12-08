@@ -3,6 +3,7 @@ package nettyServer.enums;
 public enum MsgTypeEnum {
 
     BIND_MSG("bind",3,"绑定消息类型"),
+    OFFLINE_MSG("offline",5,"离线消息类型"),
 
     P2P_MSG("p2p",9,"私聊消息类型"),
     P2P_ACK("p2p_ack",10,"私聊消息ACK"),

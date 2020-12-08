@@ -1,4 +1,4 @@
-消息组成：
+消息组成：   网关到底该不该处理业务
     {
      msgType : int,
      msgId : String,

@@ -5,6 +5,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import nettyServer.enums.MsgTypeEnum;
 import nettyServer.proto.SmartCarProtocol;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -12,6 +14,9 @@ import java.util.Set;
 
 @Component("channelEnter")
 public class ChannelEnterStrategy extends BaseStrategy implements BaseStrategyInterface {
+
+    @Autowired
+    KafkaTemplate kafkaTemplate;
 
     @Override
     public void msgAck(ChannelHandlerContext ctx, JSONObject msgJson) {
@@ -57,5 +62,6 @@ public class ChannelEnterStrategy extends BaseStrategy implements BaseStrategyIn
          * 分发服务消费消息
          * 根据redis在线群id进行kafka分发(和fromUid在同一台机器的不发)到channelEnterMsg-consumer-{ip}
          */
+        kafkaTemplate.send("channelEnterMsg-p",msgJson);
     }
 }

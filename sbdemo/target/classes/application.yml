@@ -2,6 +2,27 @@
   port: 80
 spring:
   redis:
-    host: 127.0.0.1
+    timeout: 3000
+    block-when-exhausted: true
+    host: 172.31.4.12
     port: 6379
-    timeout: 20000
+    database: 10
+    password:
+    ssl: false
+  kafka:
+    bootstrap-servers: 172.18.0.12:9092
+    producer:
+      retries: 5
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      missing-topics-fatal: false
+      type: batch
+
+kafka:
+  consume:
+    topic:
+      p2p: p2pMsg-consumer-{ip}
+      channel: channelMsg-consumer-{ip}
+      channelEnter: channelEnterMsg-consumer-{ip}

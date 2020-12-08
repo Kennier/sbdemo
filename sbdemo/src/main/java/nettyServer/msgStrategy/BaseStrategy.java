@@ -40,16 +40,18 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
     private static CopyOnWriteArraySet<Long> rooms = new CopyOnWriteArraySet<>();
     static {
         rooms.add(10086l);
+//        rooms.add(10000l);
+//        rooms.add(10010l);
     }
 
     public static void handleMsg(ChannelHandlerContext ctx, JSONObject msgJson) throws UnknownHostException {
-        int msgType = Optional.ofNullable(msgJson.getIntValue("msgType")).orElse(-1);
+        int msgType = Optional.of(msgJson.getIntValue("msgType")).orElse(-1);
         if(msgType == -1){
             return;
         }
         BaseStrategyInterface baseStrategyInterface = StrategyFactory.getStrategy(MsgTypeEnum.matchValue(msgType).getKey());
         Long fuid = msgJson.getLong("fromUid");
-        if(msgType == 3){//bind
+        if(msgType == MsgTypeEnum.BIND_MSG.getValue()){//bind
             cmap.put(fuid,ctx.channel().id());
             channels.add(ctx.channel());
             /**
@@ -60,18 +62,8 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
             redisTemplate.opsForHash().put("online:userId:channelIp",fuid, InetAddress.getLocalHost());
 
             //获取人所在的群  处理加群机器人消息的时候需要变动这两个属性★★★★★★★★★★★★★★
-            for (Long room: rooms){
-                if(roomIds.containsKey(room)){
-                    CopyOnWriteArraySet<Long> chatroomUids = roomIds.get(room);
-                    chatroomUids.add(fuid);
-                }else {
-                    CopyOnWriteArraySet<Long> chatroomUids = new CopyOnWriteArraySet<>();
-                    chatroomUids.add(fuid);
-                    roomIds.put(room,chatroomUids);
-                }
-                redisTemplate.opsForSet().add("online:channel:uids"+room, String.valueOf(fuid));//群在线的人
-//                redisTemplate.opsForSet().add("online:uid:channels"+fuid, String.valueOf(room));//人在线的群
-            }
+            updateRoomsAndIds(fuid);
+
             System.out.println("roomIds : "+roomIds.toString());
             uidRooms.put(fuid,rooms);//测试只弄一个群
             System.out.println("uidRooms : "+uidRooms.toString());
@@ -79,25 +71,38 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
 
             baseStrategyInterface.sendMsg(ctx,msgJson);//还是要推给群里所有在线的人（老子上线了）
         }
-        if(msgType == 9 || msgType == 11 || msgType == 13 || msgType == 21){//p2p chatroom chatroomAction robot
-            //只有游客会有进群动作 成员上线就进群了
+        if(msgType == MsgTypeEnum.P2P_MSG.getValue() || msgType == MsgTypeEnum.CHANNEL_MSG.getValue() || msgType == MsgTypeEnum.CHANNEL_ENTER.getValue() || msgType == MsgTypeEnum.ROBOT_MSG.getValue()){//p2p chatroom chatroomAction robot
             baseStrategyInterface.msgAck(ctx,msgJson);
             baseStrategyInterface.sendMsg(ctx,msgJson);
-            if (msgType != 13) {
+            //只有游客会有进群动作 成员上线就进群了
+            if (msgType != MsgTypeEnum.CHANNEL_ENTER.getValue()) {
                 //下面的考虑异步
                 baseStrategyInterface.updateConversationAndsaveMsg(ctx,msgJson);
+            }else {
+                //更新游客的  在线群和在线人 的关系
+                Long chatroomId = msgJson.getLong("chatroomId");
+
+                CopyOnWriteArraySet<Long> fromUididRooms = uidRooms.get(fuid);
+                fromUididRooms.add(chatroomId);
+                redisTemplate.opsForSet().add("online:channel:uids"+chatroomId, String.valueOf(fuid));//群在线的人
+
+                CopyOnWriteArraySet<Long> roomUids = roomIds.get(chatroomId);
+                roomUids.add(fuid);
+                roomIds.put(chatroomId, roomUids);
+                redisTemplate.opsForSet().add("online:uid:channels"+fuid, String.valueOf(chatroomId));//人在线的群
             }
         }
-        if(msgType == 10 || msgType == 12 || msgType == 22){//p2p chatroom robot
+        if(msgType == MsgTypeEnum.P2P_ACK.getValue() || msgType == MsgTypeEnum.CHANNEL_ACK.getValue() || msgType == MsgTypeEnum.ROBOT_ACK.getValue()){//p2p chatroom robot
             //下面的考虑异步
             baseStrategyInterface.updateConversationAndsaveMsg(ctx,msgJson);
         }
-        if(msgType == 5){//正常离线
+        if(msgType == MsgTypeEnum.OFFLINE_MSG.getValue()){//正常离线
             cmap.remove(fuid);
             CopyOnWriteArraySet<Long> rooms = uidRooms.get(fuid);//群id集合  接口返回
             for (Long roomId:rooms){
                 if(roomIds.containsKey(roomId)){
                     roomIds.get(roomId).remove(fuid);
+
                 }
             }
             baseStrategyInterface.msgAck(ctx,msgJson);
@@ -120,6 +125,21 @@ public abstract class BaseStrategy implements BaseStrategyInterface {
                 break;
             }
         }
+    }
 
+    public static void updateRoomsAndIds(Long fuid){
+        //获取人所在的群  处理加群机器人消息的时候需要变动这两个属性★★★★★★★★★★★★★★
+        for (Long room: rooms){//room接口返回
+            if(roomIds.containsKey(room)){
+                CopyOnWriteArraySet<Long> chatroomUids = roomIds.get(room);
+                chatroomUids.add(fuid);
+            }else {
+                CopyOnWriteArraySet<Long> chatroomUids = new CopyOnWriteArraySet<>();
+                chatroomUids.add(fuid);
+                roomIds.put(room,chatroomUids);
+            }
+            redisTemplate.opsForSet().add("online:channel:uids"+room, String.valueOf(fuid));//群在线的人
+            redisTemplate.opsForSet().add("online:uid:channels"+fuid, String.valueOf(room));//人在线的群
+        }
     }
 }
