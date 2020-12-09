@@ -10,12 +10,13 @@ spring:
     password:
     ssl: false
   kafka:
-    bootstrap-servers: 172.18.0.12:9092
+    bootstrap-servers: 172.31.4.8:9092
     producer:
       retries: 5
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: consumerGroup
     listener:
       missing-topics-fatal: false
       type: batch
@@ -23,6 +24,12 @@ spring:
 kafka:
   consume:
     topic:
-      p2p: p2pMsg-consumer-{ip}
-      channel: channelMsg-consumer-{ip}
-      channelEnter: channelEnterMsg-consumer-{ip}
+      bind: bind-consumer-netty1
+      p2p: p2pMsg-consumer-netty1
+      channel: channelMsg-consumer-netty1
+      channelEnter: channelEnterMsg-consumer-netty1
+    dsTopic:
+      bind: bind-p
+      p2p: p2pMsg-p
+      channel: channelMsg-p
+      channelEnter: channelEnterMsg-p
