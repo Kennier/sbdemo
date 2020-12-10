@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.UUID;
 
-public class Client1001 {
+public class Client1004 {
 
     static String channelId = null;
 
@@ -46,19 +46,19 @@ public class Client1001 {
                     s = "{\r\n" +
                             "     msgType : " + msgType + ",\r\n" +
                             "     msgId : '" + UUID.randomUUID() + "',\r\n" +
-                            "     fromUid : " + 1001 + ",\r\n" +
+                            "     fromUid : " + 1004 + ",\r\n" +
                             "     toUid : " + -1 + ",\r\n" +
                             "     chatroomId : " + null + ",\r\n" +
                             "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
-                            "     channelId : '" + channelId + "' \r\n" +
+                            "     channelId : " + channelId + " \r\n" +
                             "    }";
                 }
                 if (msgType == 9) {
                     s = "{\r\n" +
                             "     msgType : " + msgType + ",\r\n" +
                             "     msgId : '" + UUID.randomUUID() + "',\r\n" +
-                            "     fromUid : " + 1001 + ",\r\n" +
-                            "     toUid : " + 1002 + ",\r\n" +
+                            "     fromUid : " + 1004 + ",\r\n" +
+                            "     toUid : " + 1001 + ",\r\n" +
                             "     chatroomId : " + null + ",\r\n" +
                             "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
                             "     channelId : '" + channelId + "', \r\n" +
@@ -74,14 +74,14 @@ public class Client1001 {
                     s = "{\r\n" +
                             "     msgType : " + msgType + ",\r\n" +
                             "     msgId : '" + UUID.randomUUID() + "',\r\n" +
-                            "     fromUid : " + 1001 + ",\r\n" +
+                            "     fromUid : " + 1004 + ",\r\n" +
                             "     toUid : " + 10086l + ",\r\n" +
                             "     chatroomId : " + 10086l + ",\r\n" +
                             "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
                             "     channelId : '" + channelId + "', \r\n" +
                             "     content : {\r\n" +
                             "                 contentType : '1',\r\n" +
-                            "                 contentText : '我是群消息呀',\r\n" +
+                            "                 contentText : '我是群消息呀1003',\r\n" +
 //                            "                 contentText : '武林大会空间广阔的发',\r\n" +
                             "                 cmdInChatType : '0' \r\n" +
                             "                }\r\n" +
@@ -91,7 +91,7 @@ public class Client1001 {
                     s = "{\r\n" +
                             "     msgType : " + msgType + ",\r\n" +
                             "     msgId : '" + UUID.randomUUID() + "',\r\n" +
-                            "     fromUid : " + 1001 + ",\r\n" +
+                            "     fromUid : " + 1004 + ",\r\n" +
                             "     toUid : " + 10086l + ",\r\n" +
                             "     chatroomId : " + 10086l + ",\r\n" +
                             "     createTime : " + Calendar.getInstance().getTimeInMillis() + ",\r\n" +
@@ -121,7 +121,7 @@ public class Client1001 {
     }
 
     public static void main(String[] args) throws Exception {
-        new Client1001().connect(8083, "127.0.0.1");
+        new Client1004().connect(8083, "127.0.0.1");
     }
 
 }

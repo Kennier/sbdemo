@@ -121,7 +121,7 @@ public class Client1002 {
     }
 
     public static void main(String[] args) throws Exception {
-        new Client1002().connect(8093, "127.0.0.1");
+        new Client1002().connect(8084, "127.0.0.1");
     }
 
 }

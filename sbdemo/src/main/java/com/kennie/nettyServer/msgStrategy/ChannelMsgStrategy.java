@@ -49,6 +49,7 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
         long fromUid = msgJson.getLong("fromUid");
         //redis获取在线群成员及游客????
         Set<Long> userIds = roomIds.get(chatroomId);
+
         for (long uid: userIds){
             if(uid == fromUid){
                 continue;

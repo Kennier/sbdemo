@@ -51,6 +51,7 @@ public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterfac
         //单机版 或者对方就在本机
         if (channelId.isPresent()) {
             channels.find(channelId.get()).writeAndFlush(msg);
+            //重投机制
         }else {
             /**
              * 往kafka发送消息 p2pMsg-p

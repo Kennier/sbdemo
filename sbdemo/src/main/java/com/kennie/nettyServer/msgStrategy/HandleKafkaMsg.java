@@ -6,8 +6,6 @@ import com.kennie.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.ChannelId;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
 @Component
 public class HandleKafkaMsg {
 
@@ -30,9 +28,9 @@ public class HandleKafkaMsg {
         byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
         SmartCarProtocol smartCarProtocol = new SmartCarProtocol(msgByte.length,msgByte);
 
-        long chatroomId = msgJson.getLong("chatroomId");
-        Set<Long> roomOnlineUsers = BaseStrategy.roomIds.get(chatroomId);
-        for(Long toUid:roomOnlineUsers){
+        long toUid = msgJson.getLong("toUid");
+        ChannelId channelId = BaseStrategy.cmap.get(toUid);
+        if(channelId != null) {
             BaseStrategy.channels.find(BaseStrategy.cmap.get(toUid)).writeAndFlush(smartCarProtocol);
         }
     }

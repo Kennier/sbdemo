@@ -7,6 +7,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,9 @@ public class NettyServer implements CommandLineRunner {
 
     @Autowired
     SimpleChatServerInitializer simpleChatServerInitializer;
+
+    @Value("${netty.port}")
+    String nettyPort;
 
     @Override
     public void run(String... args) throws InterruptedException {
@@ -34,7 +38,7 @@ public class NettyServer implements CommandLineRunner {
 
             System.out.println("SimpleChatServer 启动了");
 
-            ChannelFuture f = serverBootstrap.bind(8093).sync();
+            ChannelFuture f = serverBootstrap.bind(Integer.parseInt(nettyPort)).sync();
 
             f.channel().closeFuture().sync();
         } finally {

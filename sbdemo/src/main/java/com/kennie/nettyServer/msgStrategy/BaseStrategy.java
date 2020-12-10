@@ -10,6 +10,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,9 @@ public class BaseStrategy implements BaseStrategyInterface {
 
     @Autowired
     RedisTemplate<String, String> redisTemplate;
+
+    @Value("${kafka.consume.baseNetty}")
+    String baseNetty;
     /*
      *
      * 下面三个变量需要放redis集群里，netty集群的时候需要用到 （现在是单机版 垃中之垃）
@@ -62,7 +66,7 @@ public class BaseStrategy implements BaseStrategyInterface {
              * 需要处理多端登陆挤掉的消息★★★★★★★★★★★★★★
              */
 //            redisTemplate.opsForHash().put("online:userId:channelIp",String.valueOf(fuid), InetAddress.getLocalHost());
-            redisTemplate.opsForHash().put("online:userId:channelIp",String.valueOf(fuid), "netty1");
+            redisTemplate.opsForHash().put("online:userId:channelIp",String.valueOf(fuid), baseNetty);
 
             //获取人所在的群  处理加群机器人消息的时候需要变动这两个属性★★★★★★★★★★★★★★
             updateRoomsAndIds(fuid);

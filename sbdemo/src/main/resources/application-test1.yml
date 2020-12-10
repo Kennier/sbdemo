@@ -1,0 +1,39 @@
+﻿server:
+  port: 81
+spring:
+  redis:
+    timeout: 3000
+    block-when-exhausted: true
+    host: 172.31.4.12
+    port: 6379
+    database: 10
+    password:
+    ssl: false
+  kafka:
+    bootstrap-servers: 172.31.4.8:9092
+    producer:
+      retries: 5
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: consumerGroup
+    listener:
+      missing-topics-fatal: false
+      type: batch
+
+netty:
+  port: 8084
+
+kafka:
+  consume:
+    baseNetty: netty2
+    topic:
+      bind: bind-consumer-${kafka.consume.baseNetty}
+      p2p: p2pMsg-consumer-${kafka.consume.baseNetty}
+      channel: channelMsg-consumer-${kafka.consume.baseNetty}
+      channelEnter: channelEnterMsg-consumer-${kafka.consume.baseNetty}
+    dsTopic:
+      bind: bind-p
+      p2p: p2pMsg-p
+      channel: channelMsg-p
+      channelEnter: channelEnterMsg-p
