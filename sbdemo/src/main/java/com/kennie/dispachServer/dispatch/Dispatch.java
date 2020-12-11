@@ -16,7 +16,7 @@ public class Dispatch {
     KafkaTemplate kafkaTemplate;
 
     @Autowired
-    RedisTemplate redisTemplate;
+    RedisTemplate<String, String> redisTemplate;
 
     public void handleP2P(String value){
         System.out.println("DS收到需要转发的私聊消息：  "+value);

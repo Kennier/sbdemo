@@ -50,6 +50,15 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
         //redis获取在线群成员及游客????
         Set<Long> userIds = roomIds.get(chatroomId);
 
+        /**
+         * 集群版
+         * 往kafka发送消息 channelMsg-p
+         * 分发服务消费消息
+         * 根据redis在线群id进行kafka分发(和fromUid在同一台机器的不发)到channelMsg-consumer-{ip}
+         */
+        kafkaTemplate.send("channelMsg-p",msgJson.toJSONString());
+
+        //单机 或者就在本机
         for (long uid: userIds){
             if(uid == fromUid){
                 continue;
@@ -58,16 +67,9 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
             byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
             SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
             Optional<ChannelId> channelId = Optional.ofNullable(cmap.get(uid));
-            if (channelId.isPresent()) {//单机 或者就在本机
+            if (channelId.isPresent()) {
                 channels.find(channelId.get()).writeAndFlush(msg);
             }
         }
-        /**
-         * 集群版
-         * 往kafka发送消息 channelMsg-p
-         * 分发服务消费消息
-         * 根据redis在线群id进行kafka分发(和fromUid在同一台机器的不发)到channelMsg-consumer-{ip}
-         */
-        kafkaTemplate.send("channelMsg-p",msgJson.toJSONString());
     }
 }
