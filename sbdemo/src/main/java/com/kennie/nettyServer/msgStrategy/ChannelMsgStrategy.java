@@ -4,13 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.kennie.nettyServer.enums.MsgTypeEnum;
 import com.kennie.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
-import java.util.Set;
 
 @Component("channel")
 public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
@@ -45,10 +41,6 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
 
     @Override
     public void sendMsg(ChannelHandlerContext ctx, JSONObject msgJson){
-        long chatroomId = msgJson.getLong("chatroomId");
-        long fromUid = msgJson.getLong("fromUid");
-        //redis获取在线群成员及游客????
-        Set<Long> userIds = roomIds.get(chatroomId);
 
         /**
          * 集群版
@@ -58,18 +50,22 @@ public class ChannelMsgStrategy extends BaseStrategy implements BaseStrategyInte
          */
         kafkaTemplate.send("channelMsg-p",msgJson.toJSONString());
 
+//        long chatroomId = msgJson.getLong("chatroomId");
+//        long fromUid = msgJson.getLong("fromUid");
+//        //redis获取在线群成员及游客????
+//        Set<Long> userIds = roomIds.get(chatroomId);
         //单机 或者就在本机
-        for (long uid: userIds){
-            if(uid == fromUid){
-                continue;
-            }
-            msgJson.put("toUid",uid);
-            byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
-            SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
-            Optional<ChannelId> channelId = Optional.ofNullable(cmap.get(uid));
-            if (channelId.isPresent()) {
-                channels.find(channelId.get()).writeAndFlush(msg);
-            }
-        }
+//        for (long uid: userIds){
+//            if(uid == fromUid){
+//                continue;
+//            }
+//            msgJson.put("toUid",uid);
+//            byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
+//            SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
+//            Optional<ChannelId> channelId = Optional.ofNullable(cmap.get(uid));
+//            if (channelId.isPresent()) {
+//                channels.find(channelId.get()).writeAndFlush(msg);
+//            }
+//        }
     }
 }

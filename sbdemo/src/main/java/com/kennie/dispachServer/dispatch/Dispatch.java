@@ -43,7 +43,7 @@ public class Dispatch {
             msgJson.put("toUid",Long.valueOf(toUid));
             Object tochannelIp = redisTemplate.opsForHash().get("online:userId:channelIp", toUid);
             tochannelIp = tochannelIp == null?"":(String)tochannelIp;
-            if(toUid.equals(String.valueOf(fuid)) || fromChannelIp.equals(tochannelIp)){//表示再同一台网关机器
+            if(toUid.equals(String.valueOf(fuid))){// || fromChannelIp.equals(tochannelIp)表示再同一台网关机器
                 continue;
             }
             if(!"".equals(tochannelIp)){
@@ -71,7 +71,7 @@ public class Dispatch {
                 msgJson.put("toUid",Long.valueOf(toUid));
                 Object tochannelIp = redisTemplate.opsForHash().get("online:userId:channelIp", toUid);
                 tochannelIp = tochannelIp == null?"":(String)tochannelIp;
-                if(toUid.equals(String.valueOf(fuid)) || fromChannelIp.equals(tochannelIp)){//表示再同一台网关机器
+                if(toUid.equals(String.valueOf(fuid))){//|| fromChannelIp.equals(tochannelIp)表示再同一台网关机器
                     continue;
                 }
                 if(!"".equals(tochannelIp)){
