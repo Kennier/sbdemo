@@ -5,6 +5,7 @@ import com.kennie.nettyServer.enums.MsgTypeEnum;
 import com.kennie.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -36,21 +37,31 @@ public class P2pMsgStrategy extends BaseStrategy implements BaseStrategyInterfac
         ackMsg.put("toUid",msgJson.getLong("toUid"));
         ackMsg.put("createTime", msgJson.getLong("createTime"));
         System.out.println("发送ACK消息"+ackMsg.toJSONString());
-        byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
-        SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
-        ctx.writeAndFlush(msg);
+        String reqChannel = msgJson.getString("reqChannel");
+        if("ws".equals(reqChannel)){
+            ctx.writeAndFlush(new TextWebSocketFrame(ackMsg.toJSONString()));
+        }else {
+            byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
+            SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
+            ctx.writeAndFlush(msg);
+        }
     }
 
     @Override
     public void sendMsg(ChannelHandlerContext ctx, JSONObject msgJson){
-        byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
-        SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
         Long toUid = msgJson.getLong("toUid");
 
         Optional<ChannelId> channelId = Optional.ofNullable(cmap.get(toUid));
         //单机版 或者对方就在本机
         if (channelId.isPresent()) {
-            channels.find(channelId.get()).writeAndFlush(msg);
+            String reqChannel = reqCmap.get(toUid);
+            if("ws".equals(reqChannel)){
+                channels.find(channelId.get()).writeAndFlush(new TextWebSocketFrame(msgJson.toJSONString()));
+            }else {
+                byte[] msgByte = JSONObject.toJSONString(msgJson).getBytes();
+                SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
+                channels.find(channelId.get()).writeAndFlush(msg);
+            }
             //重投机制
         }else {
             /**

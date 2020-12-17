@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.kennie.nettyServer.enums.MsgTypeEnum;
 import com.kennie.nettyServer.proto.SmartCarProtocol;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -27,9 +28,14 @@ public class ChannelEnterStrategy extends BaseStrategy implements BaseStrategyIn
         ackMsgContent.put("onlineUsers", roomIds.get(msgJson.getLong("chatroomId")));
         ackMsg.put("content", ackMsgContent);
         System.out.println("发送进群ACK消息"+ackMsg.toJSONString());
-        byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
-        SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
-        ctx.writeAndFlush(msg);
+        String reqChannel = msgJson.getString("reqChannel");
+        if("ws".equals(reqChannel)){
+            ctx.writeAndFlush(new TextWebSocketFrame(ackMsg.toJSONString()));
+        }else {
+            byte[] msgByte = JSONObject.toJSONString(ackMsg).getBytes();
+            SmartCarProtocol msg = new SmartCarProtocol(msgByte.length,msgByte);
+            ctx.writeAndFlush(msg);
+        }
     }
 
     @Override

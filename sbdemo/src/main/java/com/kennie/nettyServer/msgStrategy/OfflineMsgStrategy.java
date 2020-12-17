@@ -8,15 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-@Component("bind")
-public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
+@Component("offline")
+public class OfflineMsgStrategy extends BaseStrategy implements BaseStrategyInterface {
 
     @Autowired
     KafkaTemplate kafkaTemplate;
 
     @Override
     public void msgAck(ChannelHandlerContext ctx, JSONObject msgJson) {
-        msgJson.put("channelId",ctx.channel().id().asLongText());
         String reqChannel = msgJson.getString("reqChannel");
         if("ws".equals(reqChannel)){
             ctx.channel().writeAndFlush(new TextWebSocketFrame(msgJson.toJSONString()));
@@ -50,7 +49,8 @@ public class BindMsgStrategy extends BaseStrategy implements BaseStrategyInterfa
          * 往kafka发送消息 bind-p
          * 分发服务消费消息 根据redis所有在线群里的所有人员id(和fromUid在同一台机器的不发)进行kafka分发 p2pMsg-consumer-{ip}
          */
-        kafkaTemplate.send("bind-p",msgJson.toJSONString());
+        kafkaTemplate.send("offline-p",msgJson.toJSONString());
     }
+
 
 }

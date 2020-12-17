@@ -38,7 +38,7 @@ public class Dispatch {
 
         Long chatroomId = msgJson.getLong("chatroomId");
         //群在线的人
-        Set<String> roomIds = redisTemplate.opsForSet().members("online:channel:uids"+chatroomId);
+        Set<String> roomIds = redisTemplate.opsForSet().members("online:channel:uids:"+chatroomId);
         for (String toUid : roomIds){
             msgJson.put("toUid",Long.valueOf(toUid));
             Object tochannelIp = redisTemplate.opsForHash().get("online:userId:channelIp", toUid);
@@ -63,10 +63,10 @@ public class Dispatch {
          * 往群里的人发消息
          */
         //人在线的群（不用接口请求）
-        Set<String> rooms = redisTemplate.opsForSet().members("online:uid:channels" + fuid);
+        Set<String> rooms = redisTemplate.opsForSet().members("online:uid:channels:" + fuid);
         for (String room :rooms){
             //群在线的人
-            Set<String> roomIds = redisTemplate.opsForSet().members("online:channel:uids"+room);
+            Set<String> roomIds = redisTemplate.opsForSet().members("online:channel:uids:"+room);
             for (String toUid : roomIds){
                 msgJson.put("toUid",Long.valueOf(toUid));
                 Object tochannelIp = redisTemplate.opsForHash().get("online:userId:channelIp", toUid);

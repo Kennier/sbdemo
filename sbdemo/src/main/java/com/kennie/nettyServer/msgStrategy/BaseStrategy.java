@@ -37,6 +37,7 @@ public class BaseStrategy implements BaseStrategyInterface {
      * */
 
     static ConcurrentHashMap<Long, ChannelId> cmap = new ConcurrentHashMap<Long, ChannelId>();//缓存本机在线uid和channelId  放redis
+    static ConcurrentHashMap<Long, String> reqCmap = new ConcurrentHashMap<>();//缓存本机在线uid和reqChannel
     static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);//本机存储的channel
 
     static ConcurrentHashMap<Long, CopyOnWriteArraySet<Long>> roomIds = new ConcurrentHashMap<>();//群id——>在线uid（连接在本机的uid）
@@ -51,6 +52,7 @@ public class BaseStrategy implements BaseStrategyInterface {
 
     public void handleMsg(ChannelHandlerContext ctx, JSONObject msgJson) throws UnknownHostException {
         int msgType = Optional.of(msgJson.getIntValue("msgType")).orElse(-1);
+        String reqChannel = "ws".equals(msgJson.getString("reqChannel"))?"ws":"tcp";
         if(msgType == -1){
             return;
         }
@@ -59,6 +61,7 @@ public class BaseStrategy implements BaseStrategyInterface {
         Long fuid = msgJson.getLong("fromUid");
         if(msgType == MsgTypeEnum.BIND_MSG.getValue()){//bind
             cmap.put(fuid,ctx.channel().id());
+            reqCmap.put(fuid, reqChannel);
             channels.add(ctx.channel());
             /**
              *
@@ -91,12 +94,12 @@ public class BaseStrategy implements BaseStrategyInterface {
 
                 CopyOnWriteArraySet<Long> fromUididRooms = uidRooms.get(fuid);
                 fromUididRooms.add(chatroomId);
-                redisTemplate.opsForSet().add("online:channel:uids"+chatroomId, String.valueOf(fuid));//群在线的人
+                redisTemplate.opsForSet().add("online:channel:uids:"+chatroomId, String.valueOf(fuid));//群在线的人
 
                 CopyOnWriteArraySet<Long> roomUids = roomIds.get(chatroomId);
                 roomUids.add(fuid);
                 roomIds.put(chatroomId, roomUids);
-                redisTemplate.opsForSet().add("online:uid:channels"+fuid, String.valueOf(chatroomId));//人在线的群
+                redisTemplate.opsForSet().add("online:uid:channels:"+fuid, String.valueOf(chatroomId));//人在线的群
             }
         }
         if(msgType == MsgTypeEnum.P2P_ACK.getValue() || msgType == MsgTypeEnum.CHANNEL_ACK.getValue() || msgType == MsgTypeEnum.ROBOT_ACK.getValue()){//p2p chatroom robot
@@ -105,28 +108,32 @@ public class BaseStrategy implements BaseStrategyInterface {
         }
         if(msgType == MsgTypeEnum.OFFLINE_MSG.getValue()){//正常离线
             cmap.remove(fuid);
+            reqCmap.remove(fuid);
+            redisTemplate.opsForSet().remove("online:uid:channels:"+fuid);//人在线的群
             CopyOnWriteArraySet<Long> rooms = uidRooms.get(fuid);//群id集合  接口返回
             for (Long roomId:rooms){
                 if(roomIds.containsKey(roomId)){
                     roomIds.get(roomId).remove(fuid);
-
+                    redisTemplate.opsForSet().remove("online:channel:uids:"+roomId, String.valueOf(fuid));//群在线的人
                 }
             }
             baseStrategyInterface.msgAck(ctx,msgJson);
         }
     }
 
-    public static void removeByChannel(Channel channel){//异常退出 服务端断开连接
+    public void removeByChannel(Channel channel){//异常退出 服务端断开连接
         for (Map.Entry<Long, ChannelId> entry:cmap.entrySet()){
             if(channel.equals(entry.getValue())){
                 Long uid = entry.getKey();
                 cmap.remove(uid);//去掉在线uid
-
+                reqCmap.remove(uid);//去掉在线uid渠道
+                redisTemplate.opsForSet().remove("online:uid:channels:"+uid);//人在线的群
 
                 CopyOnWriteArraySet<Long> rooms = uidRooms.get(uid);//群id集合  接口返回
                 for (Long roomId:rooms){
                     if(roomIds.containsKey(roomId)){
                         roomIds.get(roomId).remove(uid);
+                        redisTemplate.opsForSet().remove("online:channel:uids:"+roomId, String.valueOf(uid));//群在线的人
                     }
                 }
                 break;
@@ -145,8 +152,8 @@ public class BaseStrategy implements BaseStrategyInterface {
                 chatroomUids.add(fuid);
                 roomIds.put(room,chatroomUids);
             }
-            redisTemplate.opsForSet().add("online:channel:uids"+room, String.valueOf(fuid));//群在线的人
-            redisTemplate.opsForSet().add("online:uid:channels"+fuid, String.valueOf(room));//人在线的群
+            redisTemplate.opsForSet().add("online:channel:uids:"+room, String.valueOf(fuid));//群在线的人
+            redisTemplate.opsForSet().add("online:uid:channels:"+fuid, String.valueOf(room));//人在线的群
         }
     }
 }
