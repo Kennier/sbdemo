@@ -29,11 +29,13 @@ kafka:
     baseNetty: netty2
     topic:
       bind: bind-consumer-${kafka.consume.baseNetty}
+      offline: offline-consumer-${kafka.consume.baseNetty}
       p2p: p2pMsg-consumer-${kafka.consume.baseNetty}
       channel: channelMsg-consumer-${kafka.consume.baseNetty}
       channelEnter: channelEnterMsg-consumer-${kafka.consume.baseNetty}
     dsTopic:
       bind: bind-p
+      offline: offline-p
       p2p: p2pMsg-p
       channel: channelMsg-p
       channelEnter: channelEnterMsg-p

@@ -52,7 +52,7 @@ public class Dispatch {
         }
     }
 
-    public void handleBind(String value) {
+    public void handleBindOrOffline(String value) {
         System.out.println("DS收到需要转发的bind消息：  "+value);
         JSONObject msgJson = JSON.parseObject(value);
         Long fuid = msgJson.getLong("fromUid");

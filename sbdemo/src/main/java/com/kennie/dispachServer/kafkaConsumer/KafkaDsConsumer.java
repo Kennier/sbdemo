@@ -28,7 +28,19 @@ public class KafkaDsConsumer {
         for(TopicPartition topicPartition:consumerRecords.partitions()){
             for (ConsumerRecord<Object,String> consumerRecord:consumerRecords.records(topicPartition)){
                 System.out.println("DS消费时间："+System.currentTimeMillis()+"  "+consumerRecord.value());
-                dispatch.handleBind(consumerRecord.value());
+                dispatch.handleBindOrOffline(consumerRecord.value());
+            }
+        }
+    }
+
+    // 批量消费监听
+//    @KafkaListener(groupId = "consumerGroup2",topics = "${kafka.consume.dsTopic.p2p}")
+    @KafkaListener(topics = "${kafka.consume.dsTopic.offline}")
+    public void onOfflineMessage(ConsumerRecords<Object,String> consumerRecords) {
+        for(TopicPartition topicPartition:consumerRecords.partitions()){
+            for (ConsumerRecord<Object,String> consumerRecord:consumerRecords.records(topicPartition)){
+                System.out.println("DS消费时间："+System.currentTimeMillis()+"  "+consumerRecord.value());
+                dispatch.handleBindOrOffline(consumerRecord.value());
             }
         }
     }
